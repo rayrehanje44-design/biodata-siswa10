@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biodata Sekolah</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --kartu: #ffffff;
+      --teks: #14213d;
+      --teks-redup: #5b667a;
+      --garis: #d6dde8;
+      --aksen: #1d4ed8;
+      --aksen-teks: #ffffff;
+      --bahaya: #b42318;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1522;
+        --kartu: #172033;
+        --teks: #e8edf6;
+        --teks-redup: #98a4ba;
+        --garis: #2a3650;
+        --aksen: #6c9bff;
+        --aksen-teks: #0e1522;
+        --bahaya: #ff8b80;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--teks);
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    .wadah { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+
+    .atas { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    header h1 { margin: 0 0 4px; font-size: 1.75rem; font-weight: 800; }
+    header p  { margin: 0; color: var(--teks-redup); }
+
+    button { font: inherit; cursor: pointer; }
+    .tombol {
+      background: var(--kartu); color: var(--teks);
+      border: 1px solid var(--garis); border-radius: 10px;
+      padding: 9px 14px; font-weight: 600;
+    }
+    .tombol.utama { background: var(--aksen); color: var(--aksen-teks); border-color: var(--aksen); }
+    .tombol:focus-visible, .tab button:focus-visible, .hapus:focus-visible {
+      outline: 2px solid var(--aksen); outline-offset: 2px;
+    }
+    [hidden] { display: none !important; }
+
+    .tab { display: flex; gap: 6px; margin-top: 20px; border-bottom: 1px solid var(--garis); }
+    .tab button {
+      background: none; border: 0; color: var(--teks-redup);
+      padding: 10px 16px; font-weight: 600;
+      border-bottom: 3px solid transparent; margin-bottom: -1px;
+    }
+    .tab button.aktif { color: var(--teks); border-bottom-color: var(--aksen); }
+
+    .kontrol { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 8px; }
+    .kontrol input, .kontrol select {
+      font: inherit; color: var(--teks); background: var(--kartu);
+      border: 1px solid var(--garis); border-radius: 10px; padding: 10px 12px;
+    }
+    .kontrol input  { flex: 1 1 220px; }
+    .kontrol select { flex: 0 1 160px; }
+    .kontrol input:focus-visible, .kontrol select:focus-visible,
+    dialog input:focus-visible, dialog select:focus-visible {
+      outline: 2px solid var(--aksen); outline-offset: 1px;
+    }
+
+    .jumlah { color: var(--teks-redup); font-size: 0.9rem; margin: 0 0 16px; }
+
+    .daftar { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+
+    .kartu { background: var(--kartu); border: 1px solid var(--garis); border-radius: 14px; overflow: hidden; }
+    .pita { height: 56px; background: hsl(var(--hue) 65% 45%); }
+    .isi  { padding: 0 16px 16px; text-align: center; }
+
+    .foto {
+      width: 76px; height: 76px; margin: -38px auto 8px;
+      border-radius: 50%; border: 4px solid var(--kartu);
+      background: hsl(var(--hue) 55% 88%); color: hsl(var(--hue) 65% 28%);
+      display: grid; place-items: center; font-weight: 800; font-size: 1.5rem; overflow: hidden;
+    }
+    .foto img { width: 100%; height: 100%; object-fit: cover; }
+
+    .nama { margin: 0; font-size: 1.05rem; font-weight: 800; }
+    .nis  { margin: 0 0 12px; color: var(--teks-redup); font-size: 0.85rem; }
+
+    .rincian { margin: 0; text-align: left; font-size: 0.9rem; }
+    .rincian div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--garis); }
+    .rincian dt { color: var(--teks-redup); }
+    .rincian dd { margin: 0; font-weight: 600; text-align: right; }
+
+    .hapus {
+      margin-top: 12px; width: 100%;
+      background: none; color: var(--bahaya);
+      border: 1px solid var(--bahaya); border-radius: 10px; padding: 7px;
+      font-weight: 600;
+    }
+
+    .pesan { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--teks-redup); }
+    .pesan.galat { color: var(--bahaya); }
+
+    dialog {
+      background: var(--kartu); color: var(--teks);
+      border: 1px solid var(--garis); border-radius: 14px;
+      padding: 20px; width: min(420px, calc(100% - 32px));
+    }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+    dialog h2 { margin: 0 0 12px; font-size: 1.15rem; }
+    dialog label { display: block; margin-bottom: 10px; font-size: 0.85rem; color: var(--teks-redup); }
+    dialog input, dialog select {
+      display: block; width: 100%; margin-top: 4px;
+      font: inherit; color: var(--teks); background: var(--bg);
+      border: 1px solid var(--garis); border-radius: 8px; padding: 9px 10px;
+    }
+    .aksi { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+    .galat-form { color: var(--bahaya); font-size: 0.85rem; min-height: 1.2em; margin: 4px 0 0; }
+  </style>
+</head>
+
+<body>
+  <div class="wadah">
+    <div class="atas">
+      <header>
+        <h1>Biodata Sekolah</h1>
+        <p>Cari siswa atau guru berdasarkan nama, NIS, atau NIP.</p>
+      </header>
+    </div>
+
+    <nav class="tab" aria-label="Pilih data">
+      <button type="button" data-tab="siswa" class="aktif">Siswa</button>
+      <button type="button" data-tab="guru">Guru</button>
+    </nav>
+
+    <div class="kontrol">
+      <input id="cari" type="search" placeholder="Cari nama" aria-label="Cari">
+      <select id="filter" aria-label="Filter"></select>
+      <button id="btnTambah" class="tombol utama" type="button">Tambah siswa</button>
+    </div>
+
+    <p id="jumlah" class="jumlah" aria-live="polite"></p>
+    <main id="daftar" class="daftar"></main>
+  </div>
+
+  <!-- Jendela: tambah data -->
+  <dialog id="dlgTambah">
+    <form id="formTambah">
+      <h2 id="judulTambah"></h2>
+      <div id="isiForm"></div>
+      <p id="galatTambah" class="galat-form" role="alert"></p>
+      <div class="aksi">
+        <button type="button" class="tombol" id="batalTambah">Batal</button>
+        <button type="submit" class="tombol utama">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+  <script>
+    // ---------- PENGATURAN ----------
+    const SUPABASE_URL = "https://tinkldaiixrmmjumildh.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_x5RgQ3rkQxrjnXaVFouy-w_H75sZGcr";
+
+    // Data pribadi mana yang tampil di website publik
+    const TAMPILKAN = { jenisKelamin: true, tanggalLahir: false, alamat: false };
+
+    // Pilihan jenis kelamin di formulir (sesuaikan dengan isi tabelmu)
+    const JK = ["Laki-laki", "Perempuan"];
+
+    // Pengaturan tiap tabel
+    //  kunci  : kolom unik (dipakai untuk menghapus)
+    //  filter : kolom untuk menu filter
+    //  baris  : [label, kolom, izin tampil (opsional), format (opsional)]
+    //  form   : [kolom, label, wajib?, jenis input]
+    const TABEL = {
+      siswa: {
+        judul: "siswa", kunci: "nis", labelKunci: "NIS",
+        filter: "kelas", semua: "Semua kelas",
+        baris: [
+          ["Kelas", "kelas"],
+          ["Jenis kelamin", "jenis_kelamin", "jenisKelamin"],
+          ["Tanggal lahir", "tanggal_lahir", "tanggalLahir", formatTanggal],
+          ["Alamat", "alamat", "alamat"]
+        ],
+        form: [
+          ["nis", "NIS", true], ["nama", "Nama lengkap", true], ["kelas", "Kelas", true],
+          ["jenis_kelamin", "Jenis kelamin", false, "jk"],
+          ["tanggal_lahir", "Tanggal lahir", false, "date"],
+          ["alamat", "Alamat"], ["foto_url", "URL foto", false, "url"]
+        ]
+      },
+      guru: {
+        judul: "guru", kunci: "nip", labelKunci: "NIP",
+        filter: "mapel", semua: "Semua mapel",
+        baris: [
+          ["Mata pelajaran", "mapel"],
+          ["Jenis kelamin", "jenis_kelamin", "jenisKelamin"]
+        ],
+        form: [
+          ["nip", "NIP", true], ["nama", "Nama lengkap", true], ["mapel", "Mata pelajaran", true],
+          ["jenis_kelamin", "Jenis kelamin", false, "jk"],
+          ["foto_url", "URL foto", false, "url"]
+        ]
+      }
+    };
+
+    // ---------- HUBUNGKAN KE SUPABASE ----------
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const $ = (id) => document.getElementById(id);
+    const elDaftar = $("daftar"), elJumlah = $("jumlah"), elCari = $("cari"), elFilter = $("filter");
+
+    let tabAktif = "siswa";
+    const cache = { siswa: null, guru: null };
+    const admin = true; // tanpa login: semua pengunjung bisa tambah/hapus
+
+    // ---------- AMBIL DATA ----------
+    async function muat(tabel) {
+      tampilkanPesan("Memuat data...");
+      const { data, error } = await db.from(tabel).select("*").order("nama");
+      if (error) {
+        console.error(error);
+        tampilkanPesan("Data " + tabel + " tidak bisa dimuat. Pastikan tabel \"" + tabel + "\" sudah dibuat dan policy select untuk anon ada di Supabase.", true);
+        return;
+      }
+      cache[tabel] = data;
+      isiFilter();
+      tampilkan();
+    }
+
+    function pindahTab(tabel) {
+      tabAktif = tabel;
+      document.querySelectorAll(".tab button").forEach((b) =>
+        b.classList.toggle("aktif", b.dataset.tab === tabel));
+      $("btnTambah").textContent = "Tambah " + TABEL[tabel].judul;
+      elCari.value = "";
+      elCari.placeholder = "Cari nama atau " + TABEL[tabel].labelKunci;
+      if (cache[tabel]) { isiFilter(); tampilkan(); } else { muat(tabel); }
+    }
+
+    // ---------- TAMPILKAN KARTU ----------
+    function tampilkan() {
+      const cfg = TABEL[tabAktif];
+      const semua = cache[tabAktif] || [];
+      const kata = elCari.value.trim().toLowerCase();
+      const pilihan = elFilter.value;
+
+      const hasil = semua.filter((r) =>
+        (!pilihan || r[cfg.filter] === pilihan) &&
+        (!kata || String(r.nama || "").toLowerCase().includes(kata) ||
+                  String(r[cfg.kunci] || "").toLowerCase().includes(kata)));
+
+      elJumlah.textContent = hasil.length + " dari " + semua.length + " " + cfg.judul;
+      elDaftar.replaceChildren();
+
+      if (hasil.length === 0) {
+        tampilkanPesan(semua.length === 0
+          ? "Belum ada data " + cfg.judul + "." + (admin ? " Klik Tambah " + cfg.judul + " untuk mengisi." : "")
+          : "Tidak ada yang cocok. Coba kata kunci atau filter lain.");
+        return;
+      }
+      hasil.forEach((r) => elDaftar.appendChild(buatKartu(r)));
+    }
+
+    // textContent (bukan innerHTML) supaya teks dari database tidak bisa menyisipkan kode berbahaya (XSS)
+    function buatKartu(r) {
+      const cfg = TABEL[tabAktif];
+      const kartu = el("article", "kartu");
+      kartu.style.setProperty("--hue", warna(r[cfg.filter]));
+      kartu.appendChild(el("div", "pita"));
+
+      const isi = el("div", "isi");
+      const foto = el("div", "foto");
+      if (r.foto_url) {
+        const g = document.createElement("img");
+        g.src = r.foto_url; g.alt = "Foto " + r.nama; g.loading = "lazy";
+        g.onerror = () => foto.replaceChildren(document.createTextNode(inisial(r.nama)));
+        foto.appendChild(g);
+      } else {
+        foto.textContent = inisial(r.nama);
+      }
+      isi.appendChild(foto);
+      isi.appendChild(el("h2", "nama", r.nama));
+      isi.appendChild(el("p", "nis", cfg.labelKunci + " " + r[cfg.kunci]));
+
+      const dl = el("dl", "rincian");
+      cfg.baris.forEach(([label, kolom, izin, format]) => {
+        if (izin && !TAMPILKAN[izin]) return;
+        const nilai = format ? format(r[kolom]) : r[kolom];
+        if (!nilai) return;
+        const b = el("div");
+        b.appendChild(el("dt", "", label));
+        b.appendChild(el("dd", "", nilai));
+        dl.appendChild(b);
+      });
+      isi.appendChild(dl);
+
+      if (admin) {
+        const h = el("button", "hapus", "Hapus");
+        h.type = "button";
+        h.onclick = () => hapus(r);
+        isi.appendChild(h);
+      }
+      kartu.appendChild(isi);
+      return kartu;
+    }
+
+    // ---------- HAPUS DATA ----------
+    async function hapus(r) {
+      const cfg = TABEL[tabAktif];
+      if (!confirm("Hapus " + r.nama + " (" + cfg.labelKunci + " " + r[cfg.kunci] + ")? Data yang dihapus tidak bisa dikembalikan.")) return;
+
+      // .select() mengembalikan baris yang terhapus, jadi kita tahu penghapusan benar-benar terjadi
+      const { data, error } = await db.from(tabAktif).delete().eq(cfg.kunci, r[cfg.kunci]).select();
+      if (error || !data || data.length === 0) {
+        alert("Data tidak terhapus. Pastikan policy delete untuk anon sudah dibuat di Supabase.");
+        return;
+      }
+      cache[tabAktif] = cache[tabAktif].filter((x) => x[cfg.kunci] !== r[cfg.kunci]);
+      isiFilter();
+      tampilkan();
+    }
+
+    // ---------- TAMBAH DATA ----------
+    function bukaTambah() {
+      const cfg = TABEL[tabAktif];
+      $("judulTambah").textContent = "Tambah " + cfg.judul;
+      $("galatTambah").textContent = "";
+      const area = $("isiForm");
+      area.replaceChildren();
+
+      cfg.form.forEach(([kolom, label, wajib, jenis]) => {
+        const lb = el("label", "", label + (wajib ? " *" : ""));
+        let input;
+        if (jenis === "jk") {
+          input = el("select");
+          input.appendChild(new Option("Pilih...", ""));
+          JK.forEach((j) => input.appendChild(new Option(j, j)));
+        } else {
+          input = el("input");
+          input.type = jenis || "text";
+        }
+        input.name = kolom;
+        input.required = !!wajib;
+        lb.appendChild(input);
+        area.appendChild(lb);
+      });
+      $("dlgTambah").showModal();
+    }
+
+    $("formTambah").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cfg = TABEL[tabAktif];
+      const baru = {};
+      cfg.form.forEach(([kolom]) => {
+        const v = e.target.elements[kolom].value.trim();
+        baru[kolom] = v || null; // kolom kosong disimpan sebagai NULL
+      });
+
+      const { error } = await db.from(tabAktif).insert(baru);
+      if (error) {
+        $("galatTambah").textContent = error.code === "23505"
+          ? cfg.labelKunci + " sudah terdaftar."
+          : "Gagal menyimpan: " + error.message;
+        return;
+      }
+      $("dlgTambah").close();
+      muat(tabAktif);
+    });
+
+    // ---------- FUNGSI BANTU ----------
+    function el(tag, kelas, teks) {
+      const e = document.createElement(tag);
+      if (kelas) e.className = kelas;
+      if (teks) e.textContent = teks;
+      return e;
+    }
+
+    function inisial(nama) {
+      return String(nama || "?").split(" ").filter(Boolean).slice(0, 2)
+        .map((k) => k[0].toUpperCase()).join("");
+    }
+
+    function warna(teks) {
+      let total = 0;
+      for (const h of teks || "") total += h.charCodeAt(0);
+      return (total * 47) % 360;
+    }
+
+    function formatTanggal(teks) {
+      if (!teks) return "";
+      return new Date(teks + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    }
+
+    function tampilkanPesan(teks, galat) {
+      elDaftar.replaceChildren(el("p", "pesan" + (galat ? " galat" : ""), teks));
+    }
+
+    function isiFilter() {
+      const cfg = TABEL[tabAktif];
+      elFilter.replaceChildren(new Option(cfg.semua, ""));
+      [...new Set((cache[tabAktif] || []).map((r) => r[cfg.filter]).filter(Boolean))].sort()
+        .forEach((v) => elFilter.appendChild(new Option(v, v)));
+    }
+
+    // ---------- JALANKAN ----------
+    elCari.addEventListener("input", tampilkan);
+    elFilter.addEventListener("change", tampilkan);
+    $("btnTambah").addEventListener("click", bukaTambah);
+    $("batalTambah").addEventListener("click", () => $("dlgTambah").close());
+    document.querySelectorAll(".tab button").forEach((b) =>
+      b.addEventListener("click", () => pindahTab(b.dataset.tab)));
+
+    pindahTab("siswa");
+  </script>
+</body>
+</html>
